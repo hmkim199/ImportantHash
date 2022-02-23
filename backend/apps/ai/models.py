@@ -1,8 +1,8 @@
 from django.db import models
-from apps.video.models import Video
+from backend.apps.video.models import Video
 
 # Create your models here.
-class Importance():
+class Importance(models.Model):
     """
     Importance 모델
     """
@@ -11,7 +11,7 @@ class Importance():
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="video_id",
+        related_name="importance_video_id",
     )
 
     timestamp = models.TimeField(
@@ -30,7 +30,7 @@ class Importance():
         self.score
 
 
-class Keyword():
+class Keyword(models.Model):
     """
     Keyword 모델
     """
@@ -39,7 +39,7 @@ class Keyword():
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="video_id",
+        related_name="keyword_video_id",
     )
 
     timestamp = models.TimeField(
@@ -59,7 +59,7 @@ class Keyword():
         self.keyword
 
 
-class Frequency():
+class Frequency(models.Model):
     """
     Frequency 모델
     """
@@ -68,7 +68,7 @@ class Frequency():
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="video_id",
+        related_name="frequency_video_id",
     )
 
     word = models.CharField(

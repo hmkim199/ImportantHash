@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,10 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
-INSTALLED_APPS = [
+# django 앱
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +38,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+# 써드파티 라이브러리
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",  # token blacklist
+]
+
+# 프로젝트에서 생성한 앱
+LOCAL_APPS = [
+    "backend.apps.ai",
+    "backend.apps.script",
+    "backend.apps.user",
+    "backend.apps.video",
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,6 +98,20 @@ DATABASES = {
     }
 }
 
+# Database
+# mysql 사용
+# 현재는 django.db.utils.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1:3306' (111)") 에러 나서 sqlite로 해둠.
+import os
+# DATABASES = {
+#     'default' : {
+#         'ENGINE': 'django.db.backends.mysql',  
+#         'NAME': os.environ.get('MYSQL_DATABASE'),              
+#         'USER': os.environ.get('MYSQL_USER'),                      
+#         'PASSWORD': os.environ.get('MYSQL_PASSWORD'),               
+#         'HOST': os.environ.get('MYSQL_HOST'),                  
+#         'PORT': os.environ.get('MYSQL_PORT'),                        
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -103,9 +135,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -116,6 +148,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, ".static")
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

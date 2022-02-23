@@ -3,7 +3,7 @@ from django.db import models
 from backend.apps.video.models import Video
 
 # Create your models here.
-class Script():
+class Script(models.Model):
     """
     Script 모델
     """

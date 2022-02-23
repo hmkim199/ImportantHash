@@ -3,7 +3,7 @@ from imp import source_from_cache
 from django.db import models
 
 # Create your models here.
-class Video():
+class Video(models.Model):
     """
     Video 모델
     """

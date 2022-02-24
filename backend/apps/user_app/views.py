@@ -1,49 +1,53 @@
-from django.shortcuts import render
-
 # Create your views here.
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from rest_framework import status
-# from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import RegistrationSerializer
-from . import models
+from rest_framework.permissions import IsAuthenticated
 
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
-@api_view(['POST',])
-def logout_view(request):
+class LogoutView(APIView):
+    permission_classes = (IsAuthenticated,)
 
-    if request.method == 'POST':
-        request.user.auth_token.delete()
-        return Response(status=status.HTTP_200_OK)
+    def post(self, request, *args, **kwargs):
+        if self.request.data.get('all'):
+            token: OutstandingToken
+            for token in OutstandingToken.objects.filter(user=request.user):
+                _, _ = BlacklistedToken.objects.get_or_create(token=token)
+            return Response({"status": "OK, goodbye, all refresh tokens blacklisted"})
+        refresh_token = self.request.data.get('refresh_token')
+        token = RefreshToken(token=refresh_token)
+        token.blacklist()
+        return Response({"status": "OK, goodbye"})
 
+class RegisterView(APIView):
 
-@api_view(['POST',])
-def registration_view(request):
-
-    if request.method == 'POST':
-        serializer = RegistrationSerializer(data=request.data)
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            serializer = RegistrationSerializer(data=request.data)
         
-        data = {}
+            data = {}
         
-        if serializer.is_valid():
-            account = serializer.save()
-            
-            data['response'] = "Registration Successful!"
-            data['username'] = account.username
-            data['email'] = account.email
+            if serializer.is_valid():
+                account = serializer.save()
+                
+                data['response'] = "Registration Successful!"
+                data['username'] = account.username
+                data['email'] = account.email
 
-            token = Token.objects.get(user=account).key
-            data['token'] = token
+                # token = Token.objects.get(user=account).key
+                # data['token'] = token
 
-            # refresh = RefreshToken.for_user(account)
-            # data['token'] = {
-            #                     'refresh': str(refresh),
-            #                     'access': str(refresh.access_token),
-            #                 }
-       
-        else:
-            data = serializer.errors
+                # refresh = RefreshToken.for_user(account)
+                # data['token'] = {
+                #                     'refresh': str(refresh),
+                #                     'access': str(refresh.access_token),
+                #                 }
         
-        return Response(data, status=status.HTTP_201_CREATED)
+            else:
+                data = serializer.errors
+        
+            return Response(data, status=status.HTTP_201_CREATED)

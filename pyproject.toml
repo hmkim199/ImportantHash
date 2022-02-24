@@ -11,6 +11,10 @@ mysqlclient = "^2.1.0"
 django-dotenv = "^1.4.2"
 django-rest-framework = "^0.1.0"
 djangorestframework-simplejwt = "^5.0.0"
+youtube-transcript-api = "^0.4.3"
+krwordrank = "^1.0.3"
+pytube = "^12.0.0"
+pandas = "^1.4.1"
 
 [tool.poetry.dev-dependencies]
 

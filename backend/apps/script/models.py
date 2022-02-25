@@ -12,7 +12,7 @@ class Script(models.Model):
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="video_id",
+        related_name="video_id_script",
     )
 
     timestamp = models.TimeField(
@@ -23,9 +23,13 @@ class Script(models.Model):
         verbose_name="시간에 따른 스크립트 내용",
     )
 
+    importance_score = models.FloatField(
+        verbose_name="시간에 대한 중요도 점수",
+    )
+
     class Meta:
         verbose_name_plural = "스크립트"
         db_table = "script"
 
-    def __str__(self) -> str:
-        self.content
+    def __str__(self):
+        return self.content

@@ -14,16 +14,32 @@ class Video(models.Model):
         verbose_name="사용자",
         on_delete=models.CASCADE,
         related_name="video_user",
+        blank=True,
+        default="",
     )
 
     source = models.URLField(
         verbose_name="동영상 URL",
-        max_length=255
     )
 
     title = models.CharField(
         verbose_name="동영상 제목",
         max_length=255,
+        blank=True,
+        default="",
+    )
+
+    thumbnail = models.URLField(
+        verbose_name="썸네일 URL",
+        blank=True,
+        default="",
+    )
+
+    author = models.CharField(
+        verbose_name="업로드 한 사람",
+        max_length=255,
+        blank=True,
+        default="",
     )
 
     thumbnail = models.CharField(
@@ -42,6 +58,7 @@ class Video(models.Model):
     def __str__(self):
         return self.title
 
+
 class Keyword(models.Model):
     """
     Keyword 모델
@@ -51,20 +68,35 @@ class Keyword(models.Model):
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="video_id_keyword",
+        related_name="keyword_video_id",
     )
 
-    timestamp = models.TimeField(verbose_name="타임스탬프")
-    keyword = models.CharField(verbose_name="키워드", max_length=200)
-    keyword_score = models.IntegerField(verbose_name="키워드 점수")
+    timestamp = models.TimeField(
+        verbose_name="타임스탬프",
+        blank=True,
+        default="",
+    )
+
+    keyword = models.CharField(
+        verbose_name="시간대 키워드",
+        max_length=255,
+        blank=True,
+        default="",
+    )
+
+    score = models.FloatField(
+        verbose_name="키워드 점수",
+        blank=True,
+        default=0,
+    )
 
     class Meta:
-        verbose_name_plural = "키워드별 점수"
+        verbose_name_plural = "키워드"
         db_table = "keyword"
 
     def __str__(self):
-        return self.keyword or ''
-    
+        return self.keyword
+
 
 class Frequency(models.Model):
     """
@@ -75,15 +107,22 @@ class Frequency(models.Model):
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="video_id_frequency",
+        related_name="frequency_video_id",
     )
 
-    keyword = models.CharField(verbose_name="키워드", max_length=200)
-    keyword_frequency = models.IntegerField(verbose_name="키워드 빈도수 ")
+    keyword = models.CharField(
+        verbose_name="키워드",
+        max_length=255,
+    )
+
+    count = models.IntegerField(
+        verbose_name="키워드 빈도 수",
+        default=0,
+    )
 
     class Meta:
-        verbose_name_plural = "키워드별 빈도수"
+        verbose_name_plural = "키워드 빈도 수"
         db_table = "frequency"
 
     def __str__(self):
-        return self.keyword or ''
+        return self.keyword

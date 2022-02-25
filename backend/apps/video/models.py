@@ -42,15 +42,6 @@ class Video(models.Model):
         default="",
     )
 
-    thumbnail = models.CharField(
-        verbose_name="동영상 썸네일",
-        max_length=255,
-    )
-
-    author = models.CharField(
-        verbose_name="동영상 작성자",
-        max_length=255,
-    )
     class Meta:
         verbose_name_plural = "비디오"
         db_table = "video"

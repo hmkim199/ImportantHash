@@ -47,7 +47,7 @@ class VideoAPIView(APIView):
             script = Script(video=video)
             script.timestamp = timestamp
             script.content = scripts_info[timestamp]["script"]
-            script.importance = scripts_info[timestamp]["importance"]
+            script.importance_score = scripts_info[timestamp]["importance"]
             script.save()
 
     def store_frequency(self, words_freq, video):

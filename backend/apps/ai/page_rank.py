@@ -1,6 +1,6 @@
 import typing as ty
 import pytube
-import re
+import re, os
 from youtube_transcript_api import YouTubeTranscriptApi
 from krwordrank.word import summarize_with_keywords
 
@@ -9,7 +9,7 @@ sample_url = "https://www.youtube.com/watch?v=mc02IZhouEg"
 
 class YoutubeInference:
 	youtube_id_compiler = re.compile("(v=)([a-zA-Z0-9-_]{11})")
-	stop_words_path = "stopwords.txt"
+	stop_words_path = "backend/apps/ai/stopwords.txt"
 	with open(stop_words_path, "r", encoding="utf-8") as fp:
 		stop_words = fp.readline().split(' ')
 
@@ -136,7 +136,7 @@ class YoutubeInference:
 			ret = minute + ":0" + second
 		else:
 			ret = minute + ":" + second
-		return ret            
+		return "00:"+ret            
 	
 
 	def preprocessing(self, script):
@@ -148,9 +148,9 @@ class YoutubeInference:
 		return new_script
 
 
-yi = YoutubeInference()
-scripts_info, keywords_info, words_freq = yi.inference()
-import pprint
-pprint.pprint(scripts_info)
-pprint.pprint(keywords_info)
-pprint.pprint(words_freq)
+# yi = YoutubeInference()
+# scripts_info, keywords_info, words_freq = yi.inference()
+# import pprint
+# pprint.pprint(scripts_info)
+# pprint.pprint(keywords_info)
+# pprint.pprint(words_freq)

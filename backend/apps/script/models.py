@@ -25,6 +25,7 @@ class Script(models.Model):
 
     importance_score = models.FloatField(
         verbose_name="시간에 대한 중요도 점수",
+        default=0,
     )
 
     class Meta:

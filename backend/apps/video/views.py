@@ -5,10 +5,12 @@ from rest_framework.views import APIView
 from .models import Video
 from backend.apps.script.models import Script
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from backend.apps.ai.page_rank import YoutubeInference
 from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
+# from rest_framework_simplejwt.authentication import JWTAuthentication
+# from rest_framework.authentication import SessionAuthentication
 
 
 # Create your views here.
@@ -16,7 +18,11 @@ from drf_yasg.utils import swagger_auto_schema
 
 class VideoListAPIView(APIView):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticated]
+    # authentication_classes = (JWTAuthentication, SessionAuthentication,)
+    # authentication_classes = ()
+
 
     def get_user(self):
         return self.request.user
@@ -24,8 +30,8 @@ class VideoListAPIView(APIView):
     @swagger_auto_schema(responses={200: VideoSerializer(many=True)})
     def get(self, request):
         user = self.get_user()
-        # TODO: user_id = user로 고쳐야 함.
-        videos = Video.objects.filter(user_id=1)
+
+        videos = Video.objects.filter(user_id=user)
         serializer = VideoSerializer(videos, many=True)
         return Response(serializer.data)
 
@@ -59,9 +65,9 @@ class VideoAPIView(APIView):
     
 
     @swagger_auto_schema(responses={200: VideoSerializer()})
-    def get(self, request, pk):
+    def get(self, request, video_id):
         try:
-            video = Video.objects.get(pk=pk)
+            video = Video.objects.filter(pk=video_id)
             serializer = VideoSerializer(video)
             return Response(serializer.data)
 
@@ -75,9 +81,7 @@ class VideoAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
         source = validated_data.get("source")
-        # user = self.get_user()
-        # TODO: temp user. have to fix 
-        user = User.objects.get(pk=1)
+        user = self.get_user()
 
         # url로 중요도 분석
         youtube_inference = YoutubeInference(source)
@@ -100,9 +104,9 @@ class VideoAPIView(APIView):
 
 class KeywordAPIView(APIView, Video):
 
-    def get(self, request, pk):
+    def get(self, request, video_id):
         try:
-            video = Video.objects.get(pk=pk)
+            video = Video.objects.filter(pk=video_id)
             keyword = Keyword.objects.filter(video=video)
             serializer = KeywordSerializer(keyword, many=True)
             return Response(serializer.data)
@@ -113,9 +117,9 @@ class KeywordAPIView(APIView, Video):
 
 class FrequencyAPIView(APIView, Video):
 
-    def get(self, request, pk):
+    def get(self, request, video_id):
         try:
-            video = Video.objects.get(pk=pk)
+            video = Video.objects.filter(pk=video_id)
             frequency = Frequency.objects.filter(video=video)
             serializer = FrequencySerializer(frequency, many=True)
             return Response(serializer.data)

@@ -1,6 +1,7 @@
+from django.http import JsonResponse
 from .models import Script
-from video.models import Video
-from video.serializers import VideoSerializer
+from backend.apps.video.models import Video
+from backend.apps.video.serializers import VideoSerializer
 from .serializers import ScriptSerializer
 
 from rest_framework import status
@@ -11,11 +12,12 @@ from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 class ScriptAPIView(APIView):
 
-    def get(self, request, pk):
+    def get(self, request, video_id):
         try:
-            video = Video.objects.get(pk=pk)
+            video = Video.objects.get(pk=video_id)
             keyword = Script.objects.filter(video=video)
             serializer = ScriptSerializer(keyword, many=True)
+
             return Response(serializer.data)
 
         except Script.DoesNotExist:

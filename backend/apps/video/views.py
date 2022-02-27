@@ -9,12 +9,17 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from backend.apps.ai.page_rank import YoutubeInference
 from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
-# from rest_framework_simplejwt.authentication import JWTAuthentication
-# from rest_framework.authentication import SessionAuthentication
+from django.http import JsonResponse
 
 
-# Create your views here.
-
+class VideoSlugAPIView(APIView):
+    def get(self, request, video_id):
+        video = Video.objects.filter(id=video_id).only("source").first()
+        slug = video.source.split("v=")[-1]   
+        data = {
+            "video_slug": slug
+        }    
+        return JsonResponse(data)
 
 class VideoListAPIView(APIView):
 
@@ -33,6 +38,7 @@ class VideoListAPIView(APIView):
 
         videos = Video.objects.filter(user_id=user)
         serializer = VideoSerializer(videos, many=True)
+        
         return Response(serializer.data)
 
 
@@ -67,7 +73,7 @@ class VideoAPIView(APIView):
     @swagger_auto_schema(responses={200: VideoSerializer()})
     def get(self, request, video_id):
         try:
-            video = Video.objects.filter(pk=video_id)
+            video = Video.objects.filter(pk=video_id).first()
             serializer = VideoSerializer(video)
             return Response(serializer.data)
 
@@ -107,7 +113,7 @@ class KeywordAPIView(APIView, Video):
     def get(self, request, video_id):
         try:
             video = Video.objects.filter(pk=video_id)
-            keyword = Keyword.objects.filter(video=video)
+            keyword = Keyword.objects.filter(video__in=video)
             serializer = KeywordSerializer(keyword, many=True)
             return Response(serializer.data)
 
@@ -120,7 +126,12 @@ class FrequencyAPIView(APIView, Video):
     def get(self, request, video_id):
         try:
             video = Video.objects.filter(pk=video_id)
-            frequency = Frequency.objects.filter(video=video)
+            frequency = Frequency.objects.filter(video__in=video).order_by('-count')
+            
+            # 쿼리 파라미터 top. top이 3이면 빈도수 높은 3개만큼 리턴
+            top = request.GET.get('top', None) 
+            if top:
+                frequency = frequency[:int(top)]
             serializer = FrequencySerializer(frequency, many=True)
             return Response(serializer.data)
 

@@ -1,4 +1,7 @@
+from dataclasses import field
 from rest_framework.serializers import ModelSerializer
+
+from backend.apps.script import serializers
 from .models import Video, Keyword, Frequency
 
 
@@ -18,7 +21,7 @@ class KeywordSerializer(ModelSerializer):
 
     class Meta:
         model = Keyword
-        fields = '__all__'
+        exclude = ('video', 'id')
 
 
 class FrequencySerializer(ModelSerializer):
@@ -27,4 +30,4 @@ class FrequencySerializer(ModelSerializer):
 
     class Meta:
         model = Frequency
-        fields = '__all__'
+        exclude = ('video', 'id')

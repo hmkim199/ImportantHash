@@ -130,7 +130,7 @@ class VideoAPIView(APIView):
             self.store_scripts_info(scripts_info, video)
             self.store_frequency(words_freq, video)
 
-            return Response({"result": "success"}, status=status.HTTP_201_CREATED)
+            return Response({"result": "success", "video_id": video.id}, status=status.HTTP_201_CREATED)
         
         return Response({"error": "Unsupported video url. Please check the video is on youtube and support korean script."}, status=status.HTTP_400_BAD_REQUEST)
 

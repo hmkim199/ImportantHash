@@ -3,6 +3,8 @@ import pytube
 import re, os
 from youtube_transcript_api import YouTubeTranscriptApi
 from krwordrank.word import summarize_with_keywords
+import traceback
+
 
 sample_url = "https://www.youtube.com/watch?v=mc02IZhouEg"
 
@@ -45,18 +47,22 @@ class YoutubeInference:
 
 
 	def inference(self) -> ty.List[dict]:
-		scripts_info = self.get_transcript() # {00:01: {"script":"가나다라마바사"}} 형식
-		
-		sorted_scripts_N_time = sorted(scripts_info.items())
-		scripts = [value["script"] for key, value in sorted_scripts_N_time] # 시간 순으로 정렬된 스크립트
-		timestamps = [key for key, value in sorted_scripts_N_time]
-		
-		word_importance = self.get_script_keywords(scripts) # 무슨 단어가 몇 점인지
-		
-		keywords = list(word_importance.keys())
-		
-		scripts_info, keywords_info, words_freq = self.get_script_importance(scripts_info, word_importance)
-		return scripts_info, keywords_info, words_freq
+		try:
+			scripts_info = self.get_transcript() # {00:01: {"script":"가나다라마바사"}} 형식
+			
+			sorted_scripts_N_time = sorted(scripts_info.items())
+			scripts = [value["script"] for key, value in sorted_scripts_N_time] # 시간 순으로 정렬된 스크립트
+			timestamps = [key for key, value in sorted_scripts_N_time]
+			
+			word_importance = self.get_script_keywords(scripts) # 무슨 단어가 몇 점인지
+			
+			keywords = list(word_importance.keys())
+			
+			scripts_info, keywords_info, words_freq = self.get_script_importance(scripts_info, word_importance)
+			return scripts_info, keywords_info, words_freq
+		except:
+			traceback.print_exc()
+			return None
 
 
 	def get_transcript(self, lang: str = "ko") -> ty.Dict[str, dict]:

@@ -42,7 +42,7 @@ class VideoListAPIView(APIView):
     def get_user(self):
         return self.request.user
 
-    @swagger_auto_schema(responses={200: VideoSerializer(many=True)})
+    # @swagger_auto_schema(responses={200: VideoSerializer(many=True)})
     def get(self, request):
         """
         로그인 한 유저가 분석한 Video list 불러오는 API 
@@ -127,7 +127,7 @@ class VideoAPIView(APIView):
         self.store_scripts_info(scripts_info, video)
         self.store_frequency(words_freq, video)
 
-        return Response({"result": "success"}, status=status.HTTP_201_CREATED)
+        return Response({"result": "success", "video_id": video.pk}, status=status.HTTP_201_CREATED)
 
 
 class KeywordAPIView(APIView, Video):

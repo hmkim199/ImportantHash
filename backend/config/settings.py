@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*m#q86kbj)kxosh&7v55f+6214sa6(o2hqqxxk480^g+ixl@dc'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -104,7 +105,6 @@ DATABASES = {
 # Database
 # mysql 사용
 # 현재는 django.db.utils.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1:3306' (111)") 에러 나서 sqlite로 해둠.
-import os
 # DATABASES = {
 #     'default' : {
 #         'ENGINE': 'django.db.backends.mysql',  
@@ -155,6 +155,7 @@ ACCOUNT_LOGOUT_ON_GET = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, ".static")
+# STATICFILES_DIRS = ((os.path.join(BASE_DIR, 'static')), )
 
 
 # Default primary key field type

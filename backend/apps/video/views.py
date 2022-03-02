@@ -13,7 +13,14 @@ from django.http import JsonResponse
 
 
 class VideoSlugAPIView(APIView):
+    """
+    Video Slug 관련 REST API 제공
+    """
+
     def get(self, request, video_id):
+        """
+        Video Slug 불러오는 API
+        """
         video = Video.objects.filter(id=video_id).only("source").first()
         slug = video.source.split("v=")[-1]   
         data = {
@@ -21,8 +28,11 @@ class VideoSlugAPIView(APIView):
         }    
         return JsonResponse(data)
 
-class VideoListAPIView(APIView):
 
+class VideoListAPIView(APIView):
+    """
+    로그인 한 유저의  관련 REST API 제공
+    """
     permission_classes = [IsAuthenticatedOrReadOnly]
     # permission_classes = [IsAuthenticated]
     # authentication_classes = (JWTAuthentication, SessionAuthentication,)
@@ -34,6 +44,9 @@ class VideoListAPIView(APIView):
 
     @swagger_auto_schema(responses={200: VideoSerializer(many=True)})
     def get(self, request):
+        """
+        로그인 한 유저가 분석한 Video list 불러오는 API 
+        """
         user = self.get_user()
 
         videos = Video.objects.filter(user_id=user)
@@ -43,6 +56,9 @@ class VideoListAPIView(APIView):
 
 
 class VideoAPIView(APIView):
+    """
+    상세 Video 관련 REST API 제공
+    """
     def get_user(self):
         return self.request.user
 
@@ -72,6 +88,9 @@ class VideoAPIView(APIView):
 
     @swagger_auto_schema(responses={200: VideoSerializer()})
     def get(self, request, video_id):
+        """
+        video_id에 해당하는 특정 비디오를 불러오는 API
+        """
         try:
             video = Video.objects.filter(pk=video_id).first()
             serializer = VideoSerializer(video)
@@ -83,6 +102,9 @@ class VideoAPIView(APIView):
 
     @swagger_auto_schema(operation_description="youtube url 저장")
     def post(self, request):
+        """
+        특정 Video url을 AI 모델에 전달하여 분석한 결과를 DB에 저장하는 API
+        """
         serializer = VideoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
@@ -109,8 +131,13 @@ class VideoAPIView(APIView):
 
 
 class KeywordAPIView(APIView, Video):
-
+    """
+    특정 Video의 키워드 관련 REST API 제공
+    """
     def get(self, request, video_id):
+        """
+        video_id에 해당하는 영상의 Keyword list를 불러오는 API
+        """
         try:
             video = Video.objects.filter(pk=video_id)
             keyword = Keyword.objects.filter(video__in=video)
@@ -122,8 +149,13 @@ class KeywordAPIView(APIView, Video):
 
 
 class FrequencyAPIView(APIView, Video):
-
+    """
+    특정 Video의 빈도수 관련 REST API 제공
+    """
     def get(self, request, video_id):
+        """
+        video_id에 해당하는 영상의 Frequency list를 불러오는 API
+        """
         try:
             video = Video.objects.filter(pk=video_id)
             frequency = Frequency.objects.filter(video__in=video).order_by('-count')

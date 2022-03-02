@@ -11,8 +11,13 @@ from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class ScriptAPIView(APIView):
-
+    """
+    특정 Video의 스크립트 관련 REST API 제공
+    """
     def get(self, request, video_id):
+        """
+        video_id에 해당하는 영상의 scripts를 불러오는 API
+        """
         try:
             video = Video.objects.get(pk=video_id)
             keyword = Script.objects.filter(video=video)

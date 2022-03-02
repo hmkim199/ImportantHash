@@ -7,8 +7,13 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class RegisterView(APIView):
-
+    """
+    유저 회원가입을 위한 REST API
+    """
     def post(self, request, *args, **kwargs):
+        """
+        회원가입 요청 API
+        """
         if request.method == 'POST':
             serializer = RegistrationSerializer(data=request.data)
         

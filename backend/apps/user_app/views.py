@@ -18,7 +18,7 @@ class RegisterView(APIView):
                 account = serializer.save()
                 
                 data['response'] = "Registration Successful!"
-                data['username'] = account.username
+                data['user_ID'] = account.user_ID
                 data['email'] = account.email
 
                 # token = Token.objects.get(user=account).key

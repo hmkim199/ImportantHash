@@ -1,3 +1,4 @@
+from urllib import request
 from .models import Video, Keyword, Frequency
 from .serializers import VideoSerializer, KeywordSerializer, FrequencySerializer
 from rest_framework import status
@@ -92,8 +93,11 @@ class VideoAPIView(APIView):
         # url로 중요도 분석
         youtube_inference = YoutubeInference(source)
         
+        if user.is_anonymous:
+            video = Video(source = source)
+        else:
         # new video
-        video = Video(user_id=user, source = source)
+            video = Video(user_id=user, source = source)
         video.author = youtube_inference.author
         video.title = youtube_inference.title
         video.thumbnail = youtube_inference.thumbnail_url
@@ -105,7 +109,7 @@ class VideoAPIView(APIView):
         self.store_scripts_info(scripts_info, video)
         self.store_frequency(words_freq, video)
 
-        return Response({"result": "success"}, status=status.HTTP_201_CREATED)
+        return Response({"result": "success", "video_id": video.id}, status=status.HTTP_201_CREATED)
 
 
 class KeywordAPIView(APIView, Video):

@@ -23,14 +23,14 @@ from drf_yasg import openapi
 schema_url_patterns = [ 
     path('user/', include('backend.apps.user_app.urls')), 
     path('videos/', include('backend.apps.video.urls')), 
-    path('scripts/', include('backend.apps.video.urls')),
+    path('scripts/', include('backend.apps.script.urls')),
 ]
 
 schema_view_v1 = get_schema_view( 
     openapi.Info( 
         title="Open API", 
         default_version='v1', 
-        description="시스템 API", 
+        description="중요해씨 API", 
         terms_of_service="https://www.google.com/policies/terms/", 
     ), 
     public=True, 

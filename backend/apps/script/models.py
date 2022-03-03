@@ -12,7 +12,7 @@ class Script(models.Model):
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="video_id_script",
+        related_name="time_scripts",
     )
 
     timestamp = models.TimeField(

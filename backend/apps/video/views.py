@@ -1,13 +1,12 @@
 from .models import Video, Keyword, Frequency
-from .serializers import VideoSerializer, VideoSourceSerializer, VideoIdSerializer, VideoSlugSerializer, KeywordSerializer, FrequencySerializer
+from .serializers import VideoSerializer, VideoSourceSerializer, VideoIdSerializer, VideoSlugSerializer
 from rest_framework import status
 from rest_framework.views import APIView
 from .models import Video
 from backend.apps.script.models import Script
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from backend.apps.ai.page_rank import YoutubeInference
-from backend.apps.user_app.models import MyUser
 from drf_yasg.utils import swagger_auto_schema
 
 
@@ -212,62 +211,3 @@ class VideoAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response({"error": "Unsupported video url. Please check the video is on youtube and support korean script."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class KeywordAPIView(APIView):
-#     """
-#     특정 Video의 키워드 관련 REST API 제공
-#     """
-#     @swagger_auto_schema(
-#         operation_summary="영상 타임라인에 따른 키워드",
-#         operation_description="video_id에 해당하는 영상의 Keyword list를 불러오는 API",
-#         responses={
-#             200: KeywordSerializer(many=True),
-#             404: 'ERROR: Keyword Not found',
-#             500: 'SERVER ERROR'
-#         },
-#     )
-#     def get(self, request, video_id):
-#         """
-#         video_id에 해당하는 영상의 Keyword list를 불러오는 API
-#         """
-#         try:
-#             video = Video.objects.filter(pk=video_id)
-#             keyword = Keyword.objects.filter(video__in=video)
-#             serializer = KeywordSerializer(keyword, many=True)
-#             return Response(serializer.data)
-
-#         except Keyword.DoesNotExist:
-#             return Response({'error': 'Keyword Not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-# class FrequencyAPIView(APIView):
-#     """
-#     특정 Video의 빈도수 관련 REST API 제공
-#     """
-#     @swagger_auto_schema(
-#         operation_summary="영상 키워드에 따른 빈도수",
-#         operation_description="video_id에 해당하는 영상의 Frequency list를 불러오는 API",
-#         responses={
-#             200: FrequencySerializer(many=True),
-#             404: 'ERROR: Frequency Not found',
-#             500: 'SERVER ERROR'
-#         },
-#     )
-#     def get(self, request, video_id):
-#         """
-#         video_id에 해당하는 영상의 Frequency list를 불러오는 API
-#         """
-#         try:
-#             video = Video.objects.filter(pk=video_id)
-#             frequency = Frequency.objects.filter(video__in=video).order_by('-count')
-            
-#             # 쿼리 파라미터 top. top이 3이면 빈도수 높은 3개만큼 리턴
-#             top = request.GET.get('top', None) 
-#             if top:
-#                 frequency = frequency[:int(top)]
-#             serializer = FrequencySerializer(frequency, many=True)
-#             return Response(serializer.data)
-
-#         except Frequency.DoesNotExist:
-#             return Response({'error': 'Frequency Not found'}, status=status.HTTP_404_NOT_FOUND)

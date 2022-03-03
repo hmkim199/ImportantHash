@@ -16,7 +16,8 @@ class ScriptAPIView(APIView):
     @swagger_auto_schema(
         responses={
             200: ScriptSerializer(),
-            404: 'ERROR: Script not found'
+            404: 'ERROR: Script not found',
+            500: 'SERVER ERROR'
         }
     )
     def get(self, request, video_id):

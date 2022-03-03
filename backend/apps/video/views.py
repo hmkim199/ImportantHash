@@ -20,7 +20,8 @@ class VideoSlugAPIView(APIView):
     @swagger_auto_schema(
         responses={
             200: VideoSlugSerializer(),
-            404: 'ERROR: Video or Video slug Not found'
+            404: 'ERROR: Video or Video slug Not found',
+            500: 'SERVER ERROR'
         }
     )
     def get(self, request, video_id):
@@ -48,7 +49,8 @@ class VideoListAPIView(APIView):
     @swagger_auto_schema(
         responses={
             200: VideoSerializer(many=True),
-            401: '자격 인증 데이터가 제공되지 않았습니다.'
+            401: '자격 인증 데이터가 제공되지 않았습니다.',
+            500: 'SERVER ERROR'
         }
     )
     def get(self, request):
@@ -69,7 +71,8 @@ class VideoDetailAPIView(APIView):
     @swagger_auto_schema(
         responses={
             200: VideoSerializer(),
-            404: 'ERROR: Video not found'
+            404: 'ERROR: Video not found',
+            500: 'SERVER ERROR'
         }
     )
     def get(self, request, video_id):
@@ -119,7 +122,8 @@ class VideoAPIView(APIView):
         operation_description="특정 Video url을 AI 모델에 전달하여 분석한 결과를 DB에 저장하고 결과 리턴하는 API",
         responses={
             200: VideoIdSerializer(),
-            400: 'ERROR: Unsupported video url. Please check the video is on youtube and support korean script.'
+            400: 'ERROR: Unsupported video url. Please check the video is on youtube and support korean script.',
+            500: 'SERVER ERROR'
         },
         request_body=VideoSourceSerializer,
     )
@@ -165,7 +169,8 @@ class KeywordAPIView(APIView):
         operation_description="video_id에 해당하는 영상의 Keyword list를 불러오는 API",
         responses={
             200: KeywordSerializer(many=True),
-            404: 'ERROR: Keyword Not found'
+            404: 'ERROR: Keyword Not found',
+            500: 'SERVER ERROR'
         },
     )
     def get(self, request, video_id):
@@ -190,7 +195,8 @@ class FrequencyAPIView(APIView):
         operation_description="video_id에 해당하는 영상의 Frequency list를 불러오는 API",
         responses={
             200: FrequencySerializer(many=True),
-            404: 'ERROR: Frequency Not found'
+            404: 'ERROR: Frequency Not found',
+            500: 'SERVER ERROR'
         },
     )
     def get(self, request, video_id):

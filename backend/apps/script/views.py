@@ -13,9 +13,12 @@ class ScriptAPIView(APIView):
     특정 Video의 스크립트 관련 REST API 제공
     """
 
-    # @swagger_auto_schema(
-        
-    # )
+    @swagger_auto_schema(
+        responses={
+            200: ScriptSerializer(),
+            404: 'ERROR: Script not found'
+        }
+    )
     def get(self, request, video_id):
         """
         video_id에 해당하는 영상의 scripts를 불러오는 API

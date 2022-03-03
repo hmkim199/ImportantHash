@@ -56,9 +56,32 @@ class VideoListAPIView(APIView):
         return Response(serializer.data)
 
 
+class VideoDetailAPIView(APIView):
+    """
+    상세 비디오 관련 REST API 제공
+    """
+    @swagger_auto_schema(
+        responses={
+            200: VideoSerializer(),
+            404: 'ERROR: Video not found'
+        }
+    )
+    def get(self, request, video_id):
+        """
+        video_id에 해당하는 특정 비디오를 불러오는 API
+        """
+        try:
+            video = Video.objects.filter(pk=video_id).first()
+            serializer = VideoSerializer(video)
+            return Response(serializer.data)
+
+        except Video.DoesNotExist:
+            return Response({'error': 'Video Not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 class VideoAPIView(APIView):
     """
-    상세 Video 관련 REST API 제공
+    Video 관련 REST API 제공
     """
     def get_user(self):
         return self.request.user
@@ -85,23 +108,15 @@ class VideoAPIView(APIView):
             frequency.keyword = word
             frequency.count = words_freq[word]
             frequency.save()
-    
 
-    @swagger_auto_schema(responses={200: VideoSerializer()})
-    def get(self, request, video_id):
-        """
-        video_id에 해당하는 특정 비디오를 불러오는 API
-        """
-        try:
-            video = Video.objects.filter(pk=video_id).first()
-            serializer = VideoSerializer(video)
-            return Response(serializer.data)
-
-        except Video.DoesNotExist:
-            return Response({'error': 'Video Not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-    @swagger_auto_schema(operation_description="youtube url 저장")
+    @swagger_auto_schema(
+        operation_description="youtube url 저장",
+        responses={
+            200: 'video_id: video id',
+            400: 'ERROR: Unsupported video url. Please check the video is on youtube and support korean script.'
+        },
+        request_body=''
+    )
     def post(self, request):
         """
         특정 Video url을 AI 모델에 전달하여 분석한 결과를 DB에 저장하는 API

@@ -7,5 +7,5 @@ class ScriptSerializer(ModelSerializer):
     # video_id_script = VideoSerializer(many=True, read_only=True)
     class Meta:
         model = Script
-        exclude = ('video', 'id')
+        exclude = ('id', 'video')
         

@@ -14,6 +14,7 @@ class Video(models.Model):
         verbose_name="사용자",
         on_delete=models.CASCADE,
         related_name="video_user",
+        null=True,
         blank=True,
         default="",
     )

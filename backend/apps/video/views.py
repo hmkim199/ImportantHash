@@ -1,6 +1,6 @@
 from .models import Video, Keyword, Frequency
-from .serializers import VideoSerializer, VideoSourceSerializer, VideoIdSerializer, VideoSlugSerializer
-from rest_framework import status
+from .serializers import VideoSerializer, VideoIdSerializer, VideoSlugSerializer
+from rest_framework import status, serializers
 from rest_framework.views import APIView
 from .models import Video
 from backend.apps.script.models import Script
@@ -146,7 +146,8 @@ class VideoAPIView(APIView):
     """
     Video 관련 REST API 제공
     """
-    
+    youtube_url_prefix = "https://www.youtube.com/watch?v="
+
     def store_keywords_info(self, keywords_info, video):
         for idx in keywords_info:
             keyword = Keyword(video=video)
@@ -172,18 +173,21 @@ class VideoAPIView(APIView):
 
     @swagger_auto_schema(
         operation_summary="영상 분석 요청",
-        operation_description="특정 Video url을 AI 모델에 전달하여 분석한 결과를 DB에 저장하고 결과 리턴하는 API",
         responses={
             200: VideoIdSerializer(),
             400: 'ERROR: Unsupported video url. Please check the video is on youtube and support korean script.',
             500: 'SERVER ERROR'
         },
-        request_body=VideoSourceSerializer,
+        request_body=serializers.Serializer(),
     )
     def post(self, request):
         """
-        특정 Video url을 AI 모델에 전달하여 분석한 결과를 DB에 저장하는 API
+        특정 Video url을 AI 모델에 전달하여 분석한 결과를 DB에 저장하고 결과 리턴하는 API
+        
+        ---
+        ### 요청 바디에 {'source': '비디오 식별자'} 형식으로 보내면 됩니다! 
         """
+        request.data["source"] = self.youtube_url_prefix + request.data.get("source")
         serializer = VideoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data

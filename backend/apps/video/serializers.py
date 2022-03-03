@@ -1,6 +1,3 @@
-from dataclasses import field
-from django.forms import CharField, IntegerField
-from numpy import source
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from .models import Video, Keyword, Frequency
@@ -30,13 +27,6 @@ class VideoSlugSerializer(ModelSerializer):
     class Meta:
         model=Video
         fields = ('video_slug', )
-
-
-class VideoSourceSerializer(ModelSerializer):
-    
-    class Meta:
-        model=Video
-        fields = ('source', )
 
 
 class KeywordSerializer(ModelSerializer):

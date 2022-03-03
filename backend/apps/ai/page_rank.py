@@ -12,6 +12,8 @@ sample_url2 = "https://youtu.be/mc02IZhouEg"
 class YoutubeInference:
 	youtube_id_compiler = re.compile("(v=)([a-zA-Z0-9-_]{11})")
 	stop_words_path = "backend/apps/ai/stopwords.txt"
+	youtube_url_prefix = "https://www.youtube.com/watch?v="
+
 	with open(stop_words_path, "r", encoding="utf-8") as fp:
 		stop_words = fp.readline().split(' ')
 
@@ -22,9 +24,9 @@ class YoutubeInference:
 	max_length = 10  # 단어의 최대 길이
 	verbose = True
 
-	def __init__(self, url: str = sample_url):
-		self._url = url
-		yt = pytube.YouTube(url)
+	def __init__(self, slug: str = sample_url2[17:]):
+		self._url = self.youtube_url_prefix + slug
+		yt = pytube.YouTube(self._url)
 		self._title = yt.title
 		self._thumbnail = yt.thumbnail_url
 		self._author = yt.author

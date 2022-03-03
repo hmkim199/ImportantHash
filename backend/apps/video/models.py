@@ -60,7 +60,7 @@ class Keyword(models.Model):
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="keyword_video_id",
+        related_name="time_keywords",
     )
 
     timestamp = models.TimeField(
@@ -99,7 +99,7 @@ class Frequency(models.Model):
         Video,
         verbose_name="동영상 id",
         on_delete=models.CASCADE,
-        related_name="frequency_video_id",
+        related_name="keywords_frequency",
     )
 
     keyword = models.CharField(

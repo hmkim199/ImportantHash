@@ -14,6 +14,7 @@ class ScriptAPIView(APIView):
     """
 
     @swagger_auto_schema(
+        operation_summary="영상 스크립트",
         responses={
             200: ScriptSerializer(),
             404: 'ERROR: Script not found',

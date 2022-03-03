@@ -17,6 +17,7 @@ class VideoSlugAPIView(APIView):
     """
 
     @swagger_auto_schema(
+        operation_summary="영상 식별자",
         responses={
             200: VideoSlugSerializer(),
             404: 'ERROR: Video or Video slug Not found',
@@ -46,6 +47,7 @@ class VideoListAPIView(APIView):
         return self.request.user
 
     @swagger_auto_schema(
+        operation_summary="저장된 영상 리스트",
         responses={
             200: VideoSerializer(many=True),
             401: '자격 인증 데이터가 제공되지 않았습니다.',
@@ -68,6 +70,7 @@ class VideoDetailAPIView(APIView):
     상세 비디오 관련 REST API 제공
     """
     @swagger_auto_schema(
+        operation_summary="특정 영상 상세 정보",
         responses={
             200: VideoSerializer(),
             404: 'ERROR: Video not found',
@@ -118,6 +121,7 @@ class VideoAPIView(APIView):
             frequency.save()
 
     @swagger_auto_schema(
+        operation_summary="영상 분석 요청",
         operation_description="특정 Video url을 AI 모델에 전달하여 분석한 결과를 DB에 저장하고 결과 리턴하는 API",
         responses={
             200: VideoIdSerializer(),
@@ -168,6 +172,7 @@ class KeywordAPIView(APIView):
     특정 Video의 키워드 관련 REST API 제공
     """
     @swagger_auto_schema(
+        operation_summary="영상 타임라인에 따른 키워드",
         operation_description="video_id에 해당하는 영상의 Keyword list를 불러오는 API",
         responses={
             200: KeywordSerializer(many=True),
@@ -194,6 +199,7 @@ class FrequencyAPIView(APIView):
     특정 Video의 빈도수 관련 REST API 제공
     """
     @swagger_auto_schema(
+        operation_summary="영상 키워드에 따른 빈도수",
         operation_description="video_id에 해당하는 영상의 Frequency list를 불러오는 API",
         responses={
             200: FrequencySerializer(many=True),

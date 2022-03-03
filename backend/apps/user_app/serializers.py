@@ -1,8 +1,7 @@
 from .models import MyUser
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenVerifySerializer, TokenBlacklistSerializer, TokenRefreshSerializer
+from rest_framework.exceptions import ValidationError
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
@@ -37,3 +36,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         data['user_ID'] = self.user.get_username()
         return data
+
+class MyTokenVerifySerializer(TokenVerifySerializer):
+    token = serializers.CharField()
+
+class MyTokenBlacklistSerializer(TokenBlacklistSerializer):
+    refresh = serializers.CharField()
+
+class MyTokenRefreshSerializer(TokenRefreshSerializer):
+    refresh = serializers.CharField()
+    access = serializers.CharField(read_only=True)

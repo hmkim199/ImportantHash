@@ -6,6 +6,9 @@ from rest_framework_simplejwt.views import (TokenObtainPairView, TokenVerifyView
 
 from drf_yasg.utils import swagger_auto_schema
 class RegisterView(APIView):
+    """
+    유저 회원가입을 위한 REST API
+    """
 
     @swagger_auto_schema(
         operation_summary="회원가입",
@@ -17,6 +20,9 @@ class RegisterView(APIView):
                     401: '없는회원이거나 비밀번호틀림' }
     )
     def post(self, request, *args, **kwargs):
+        """
+        회원가입 요청 API
+        """
         if request.method == 'POST':
             serializer = RegistrationSerializer(data=request.data)
         

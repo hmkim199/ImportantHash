@@ -24,8 +24,8 @@ class VideoSlugAPIView(APIView):
 
 class VideoListAPIView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    # permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     # authentication_classes = (JWTAuthentication, SessionAuthentication,)
     # authentication_classes = ()
 

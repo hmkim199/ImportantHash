@@ -1,7 +1,7 @@
 from gc import DEBUG_COLLECTABLE
 from imp import source_from_cache
 from django.db import models
-from django.contrib.auth.models import User
+from backend.apps.user_app.models import MyUser
 
 # Create your models here.
 class Video(models.Model):
@@ -10,7 +10,7 @@ class Video(models.Model):
     """
 
     user_id = models.ForeignKey(
-        User,
+        MyUser,
         verbose_name="사용자",
         on_delete=models.CASCADE,
         related_name="video_user",

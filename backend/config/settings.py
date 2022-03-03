@@ -192,3 +192,5 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+AUTH_USER_MODEL = 'user_app.MyUser'

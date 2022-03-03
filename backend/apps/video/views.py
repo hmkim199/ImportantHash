@@ -7,7 +7,7 @@ from backend.apps.script.models import Script
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from backend.apps.ai.page_rank import YoutubeInference
-from django.contrib.auth.models import User
+from backend.apps.user_app.models import MyUser
 from drf_yasg.utils import swagger_auto_schema
 
 

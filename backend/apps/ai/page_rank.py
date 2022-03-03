@@ -7,7 +7,7 @@ import traceback
 
 
 sample_url = "https://www.youtube.com/watch?v=mc02IZhouEg"
-
+sample_url2 = "https://youtu.be/mc02IZhouEg"
 
 class YoutubeInference:
 	youtube_id_compiler = re.compile("(v=)([a-zA-Z0-9-_]{11})")

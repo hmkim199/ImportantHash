@@ -1,8 +1,41 @@
 from dataclasses import field
+from django.forms import CharField, IntegerField
+from numpy import source
 from rest_framework.serializers import ModelSerializer
-
-from backend.apps.script import serializers
+from rest_framework import serializers
 from .models import Video, Keyword, Frequency
+
+
+class VideoIdSerializer(ModelSerializer):
+    
+    video_id = serializers.SerializerMethodField()
+
+    def get_video_id(self, obj):
+        return obj.id
+
+    class Meta:
+        model = Video
+        fields = ('video_id', )
+
+
+class VideoSlugSerializer(ModelSerializer):
+    
+    video_slug = serializers.SerializerMethodField()
+
+    def get_video_slug(self, obj):
+        slug = obj.source.split("v=")[-1]
+        return slug
+
+    class Meta:
+        model=Video
+        fields = ('video_slug', )
+
+
+class VideoSourceSerializer(ModelSerializer):
+    
+    class Meta:
+        model=Video
+        fields = ('source', )
 
 
 class VideoSerializer(ModelSerializer):

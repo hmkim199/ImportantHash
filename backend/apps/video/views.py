@@ -8,7 +8,7 @@ from backend.apps.script.models import Script
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from backend.apps.ai.page_rank import YoutubeInference
-from django.contrib.auth.models import User
+from backend.apps.user_app.models import MyUser
 from drf_yasg.utils import swagger_auto_schema
 from django.http import JsonResponse
 
@@ -24,8 +24,8 @@ class VideoSlugAPIView(APIView):
 
 class VideoListAPIView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    # permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     # authentication_classes = (JWTAuthentication, SessionAuthentication,)
     # authentication_classes = ()
 

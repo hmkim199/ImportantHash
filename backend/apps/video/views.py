@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from .models import Video
 from backend.apps.script.models import Script
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from backend.apps.ai.page_rank import YoutubeInference
 from drf_yasg.utils import swagger_auto_schema
 
@@ -14,6 +14,7 @@ class VideoSlugAPIView(APIView):
     """
     Video Slug 관련 REST API 제공
     """
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @swagger_auto_schema(
         operation_summary="영상 식별자",
@@ -69,7 +70,7 @@ class VideoDetailAPIView(APIView):
     상세 비디오 관련 REST API 제공
     """
     # TODO:is owner로 바꿔야 할것같다.
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_user(self):
         return self.request.user

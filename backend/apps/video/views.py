@@ -69,6 +69,9 @@ class VideoDetailAPIView(APIView):
     """
     상세 비디오 관련 REST API 제공
     """
+    # TODO:is owner로 바꿔야 할것같다.
+    permission_classes = [IsAuthenticated]
+
     @swagger_auto_schema(
         operation_summary="특정 영상 상세 정보",
         responses={
@@ -88,6 +91,53 @@ class VideoDetailAPIView(APIView):
 
         except Video.DoesNotExist:
             return Response({'error': 'Video Not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+    @swagger_auto_schema(
+        operation_summary="영상 마이 페이지에 저장 요청",
+        operation_description="video_id에 해당하는 특정 비디오를 유저 페이지에 저장하는 API",
+        responses={
+            200: '성공적으로 저장되었습니다.',
+            404: '해당 id에 해당하는 video가 없습니다.',
+            500: 'SERVER ERROR'
+        },
+    )
+    def post(self, request, video_id):
+        """
+        video_id에 해당하는 특정 비디오를 유저 페이지에 저장하는 API
+        """
+        try:
+            video = Video.objects.filter(pk=video_id).first()
+            video.user_id = request.user
+            video.save()
+            return Response({'detail': '성공적으로 저장되었습니다.'})
+
+        except:
+            return Response({'error': '해당 id에 해당하는 video가 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+    @swagger_auto_schema(
+        operation_summary="영상 마이 페이지에서 삭제 요청",
+        operation_description="video_id에 해당하는 특정 비디오를 유저 페이지에서 삭제하는 API",
+        responses={
+            200: '성공적으로 삭제되었습니다.',
+            404: '해당 id에 해당하는 video가 없습니다.',
+            500: 'SERVER ERROR'
+        },
+    )
+    def delete(self, request, video_id):
+        """
+        video_id에 해당하는 특정 비디오를 유저 페이지에서 삭제하는 API
+        """
+        try:
+            video = Video.objects.filter(pk=video_id).first()
+            video.user_id = None
+            video.save()
+            return Response({'detail': '성공적으로 삭제되었습니다.'})
+
+        except:
+            return Response({'error': '해당 id에 해당하는 video가 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class VideoAPIView(APIView):
@@ -143,11 +193,7 @@ class VideoAPIView(APIView):
         # url로 중요도 분석
         youtube_inference = YoutubeInference(source)
         
-        if user.is_anonymous:
-            video = Video(source = source)
-        else:
-        # new video
-            video = Video(user_id=user, source = source)
+        video = Video(source = source)
         video.author = youtube_inference.author
         video.title = youtube_inference.title
         video.thumbnail = youtube_inference.thumbnail_url

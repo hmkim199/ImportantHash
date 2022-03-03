@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import VideoListAPIView, VideoAPIView, VideoDetailAPIView, KeywordAPIView, FrequencyAPIView, VideoSlugAPIView
+from backend.apps.script.views import ScriptAPIView
 
 urlpatterns = [
     path('list/', VideoListAPIView.as_view(), name='videolist'),
@@ -8,4 +9,5 @@ urlpatterns = [
     path('<int:video_id>/keywords/', KeywordAPIView.as_view(), name='video_keywords'),
     path('<int:video_id>/frequencies/', FrequencyAPIView.as_view(), name='video_frequencies'),
     path('<int:video_id>/slug/', VideoSlugAPIView.as_view(), name='video_slug'),
+    path('<int:video_id>/scripts/', ScriptAPIView.as_view(), name='video_script')
 ]

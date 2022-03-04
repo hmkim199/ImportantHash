@@ -57,7 +57,7 @@ class VideoDetailAPIView(APIView):
     )
     def get(self, request, video_id):
         """
-        video_hast_id에 해당하는 특정 비디오를 불러오는 API
+        video_id에 해당하는 특정 비디오를 불러오는 API
         """
         try:
             video = Video.objects.filter(id=video_id).first()

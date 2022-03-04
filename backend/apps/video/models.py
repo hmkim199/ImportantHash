@@ -1,11 +1,8 @@
-from base64 import decode
-from gc import DEBUG_COLLECTABLE
-from imp import source_from_cache
 from django.db import models
 from backend.apps.user.models import User
 from binascii import hexlify
 import os
-# Create your models here.
+
 
 def _createHash():
     """
@@ -13,7 +10,6 @@ def _createHash():
     """
     hash_id = hexlify(os.urandom(5))
     hash_id = hash_id[2:7]
-    # print(f"{hash_id}: hash_id 입니다.")
     hash_id = hash_id.decode("UTF-8")
     return hash_id
 
@@ -23,7 +19,6 @@ class Video(models.Model):
     Video 모델
     """
 
-    
     id = models.CharField(
         primary_key=True,
         max_length=10,

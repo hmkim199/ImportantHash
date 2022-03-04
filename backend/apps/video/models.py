@@ -1,16 +1,33 @@
-from gc import DEBUG_COLLECTABLE
-from imp import source_from_cache
 from django.db import models
-from backend.apps.user_app.models import MyUser
+from backend.apps.user.models import User
+from binascii import hexlify
+import os
 
-# Create your models here.
+
+def _createHash():
+    """
+    This function generate 10 character long hash
+    """
+    hash_id = hexlify(os.urandom(5))
+    hash_id = hash_id[2:7]
+    hash_id = hash_id.decode("UTF-8")
+    return hash_id
+
+
 class Video(models.Model):
     """
     Video 모델
     """
 
+    id = models.CharField(
+        primary_key=True,
+        max_length=10,
+        default=_createHash,
+        unique=True
+    )
+
     user_id = models.ForeignKey(
-        MyUser,
+        User,
         verbose_name="사용자",
         on_delete=models.CASCADE,
         related_name="video_user",
@@ -21,6 +38,13 @@ class Video(models.Model):
 
     source = models.URLField(
         verbose_name="동영상 URL",
+    )
+
+    youtube_slug = models.CharField(
+        verbose_name="유튜브 Slug",
+        max_length=255,
+        blank=True,
+        default="",
     )
 
     title = models.CharField(

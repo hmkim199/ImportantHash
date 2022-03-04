@@ -16,19 +16,6 @@ class VideoIdSerializer(ModelSerializer):
         fields = ('video_id', )
 
 
-class VideoSlugSerializer(ModelSerializer):
-    
-    video_slug = serializers.SerializerMethodField()
-
-    def get_video_slug(self, obj):
-        slug = obj.source.split("v=")[-1]
-        return slug
-
-    class Meta:
-        model=Video
-        fields = ('video_slug', )
-
-
 class KeywordSerializer(ModelSerializer):
 
     class Meta:
@@ -55,6 +42,7 @@ class VideoSerializer(ModelSerializer):
             'id',
             'user_id',
             'source',
+            'youtube_slug',
             'title',
             'thumbnail',
             'author',

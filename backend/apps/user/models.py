@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
 )
 
 
-class MyUserManager(BaseUserManager):
+class UserManager(BaseUserManager):
     def create_user(self, user_ID, email, password):
         """
         Creates and saves a User with the given email, date of
@@ -15,7 +15,7 @@ class MyUserManager(BaseUserManager):
             raise ValueError('Users must have an email address')
 
         user = self.model(
-            username=user_ID,
+            user_ID=user_ID,
             email=self.normalize_email(email),
         )
 
@@ -29,7 +29,7 @@ class MyUserManager(BaseUserManager):
         birth and password.
         """
         user = self.create_user(
-            username=user_ID, 
+            user_ID=user_ID, 
             email=email,
             password=password,
         )
@@ -38,7 +38,7 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-class MyUser(AbstractBaseUser):
+class User(AbstractBaseUser):
     user_ID = models.CharField(verbose_name='유저아이디', max_length=150, unique=True)
     email = models.EmailField(
         verbose_name='이메일',
@@ -50,7 +50,7 @@ class MyUser(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
-    objects = MyUserManager()
+    objects = UserManager()
 
     USERNAME_FIELD = 'user_ID'
     REQUIRED_FIELDS = ['email']

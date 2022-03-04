@@ -83,12 +83,12 @@ class VideoDetailAPIView(APIView):
             500: 'SERVER ERROR'
         }
     )
-    def get(self, request, video_id):
+    def get(self, request, hash_id):
         """
         video_id에 해당하는 특정 비디오를 불러오는 API
         """
         try:
-            video = Video.objects.filter(pk=video_id).first()
+            video = Video.objects.filter(hash_id=hash_id).first()
             serializer = VideoSerializer(video)
             return Response(serializer.data)
 

@@ -58,6 +58,7 @@ class VideoSerializer(ModelSerializer):
             'title',
             'thumbnail',
             'author',
+            'hash_id',
             'time_scripts',
             'keywords_frequency',
             'time_keywords',

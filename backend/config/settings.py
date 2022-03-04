@@ -53,7 +53,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "backend.apps.ai",
     "backend.apps.script",
-    "backend.apps.user_app",
+    "backend.apps.user",
     "backend.apps.video",
 ]
 
@@ -193,4 +193,4 @@ SWAGGER_SETTINGS = {
     },
 }
 
-AUTH_USER_MODEL = 'user_app.MyUser'
+AUTH_USER_MODEL = 'user.User'

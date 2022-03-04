@@ -1,5 +1,5 @@
 from .models import Video, Keyword, Frequency
-from .serializers import VideoSerializer, VideoIdSerializer, VideoSlugSerializer
+from .serializers import VideoSerializer, VideoIdSerializer
 from rest_framework import status, serializers
 from rest_framework.views import APIView
 from .models import Video
@@ -8,33 +8,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from backend.apps.ai.page_rank import YoutubeInference
 from drf_yasg.utils import swagger_auto_schema
-
-
-class VideoSlugAPIView(APIView):
-    """
-    Video Slug 관련 REST API 제공
-    """
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    @swagger_auto_schema(
-        operation_summary="영상 식별자",
-        responses={
-            200: VideoSlugSerializer(),
-            404: 'ERROR: Video or Video slug Not found',
-            500: 'SERVER ERROR'
-        }
-    )
-    def get(self, request, video_id):
-        """
-        Video Slug 불러오는 API
-        """
-        try:
-            video = Video.objects.filter(id=video_id).first()
-            serializer = VideoSlugSerializer(video)
-            
-            return Response(serializer.data)
-        except:
-            return Response({'error': 'Video or Video slug Not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class VideoListAPIView(APIView):
@@ -69,7 +42,6 @@ class VideoDetailAPIView(APIView):
     """
     상세 비디오 관련 REST API 제공
     """
-    # TODO:is owner로 바꿔야 할것같다.
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_user(self):
@@ -83,12 +55,12 @@ class VideoDetailAPIView(APIView):
             500: 'SERVER ERROR'
         }
     )
-    def get(self, request, hash_id):
+    def get(self, request, video_id):
         """
-        video_id에 해당하는 특정 비디오를 불러오는 API
+        video_hast_id에 해당하는 특정 비디오를 불러오는 API
         """
         try:
-            video = Video.objects.filter(hash_id=hash_id).first()
+            video = Video.objects.filter(id=video_id).first()
             serializer = VideoSerializer(video)
             return Response(serializer.data)
 
@@ -110,7 +82,7 @@ class VideoDetailAPIView(APIView):
         video_id에 해당하는 특정 비디오를 유저 페이지에 저장하는 API
         """
         try:
-            video = Video.objects.filter(pk=video_id).first()
+            video = Video.objects.filter(id=video_id).first()
             video.user_id = self.get_user()
             video.save()
             return Response({'detail': '성공적으로 저장되었습니다.'})
@@ -133,7 +105,7 @@ class VideoDetailAPIView(APIView):
         video_id에 해당하는 특정 비디오를 유저 페이지에서 삭제하는 API
         """
         try:
-            video = Video.objects.filter(pk=video_id).first()
+            video = Video.objects.filter(id=video_id).first()
             video.user_id = None
             video.save()
             return Response({'detail': '성공적으로 삭제되었습니다.'})
@@ -186,18 +158,19 @@ class VideoAPIView(APIView):
         특정 Video url을 AI 모델에 전달하여 분석한 결과를 DB에 저장하고 결과 리턴하는 API
         
         ---
-        ### 요청 바디에 {'source': '비디오 식별자'} 형식으로 보내면 됩니다! 
+        ### 요청 바디에 {'youtube_slug': '비디오 식별자'} 형식으로 보내면 됩니다! 
         """
-        request.data["source"] = self.youtube_url_prefix + request.data.get("source")
+        request.data["source"] = self.youtube_url_prefix + request.data.get("youtube_slug")
         serializer = VideoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
         source = validated_data.get("source")
+        youtube_slug = validated_data.get("youtube_slug")
 
         # url로 중요도 분석
         youtube_inference = YoutubeInference(source)
         
-        video = Video(source = source)
+        video = Video(source = source, youtube_slug=youtube_slug)
         video.author = youtube_inference.author
         video.title = youtube_inference.title
         video.thumbnail = youtube_inference.thumbnail_url

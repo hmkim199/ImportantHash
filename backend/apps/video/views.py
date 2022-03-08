@@ -1,3 +1,5 @@
+import typing as ty
+
 from backend.apps.ai.page_rank import YoutubeInference
 from backend.apps.script.models import Script
 from backend.apps.video.models import Frequency, Keyword, Video
@@ -178,18 +180,18 @@ class VideoAPIView(APIView):
         video.save()
 
         # scripts, keywords, frequency 저장
-        inf_result = youtube_inference.inference()
-        if inf_result:
-            scripts_info, keywords_info, words_freq = inf_result
+        inference_result: ty.List[dict] = youtube_inference.inference()
+        if len(inference_result) != 3:
+            return Response(
+                {"error": "Unsupported video."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-            self.store_keywords_info(keywords_info, video)
-            self.store_scripts_info(scripts_info, video)
-            self.store_frequency(words_freq, video)
+        scripts_info, keywords_info, words_freq = inference_result
 
-            serializer = VideoIdSerializer(video)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        self.store_keywords_info(keywords_info, video)
+        self.store_scripts_info(scripts_info, video)
+        self.store_frequency(words_freq, video)
 
-        return Response(
-            {"error": "Unsupported video."},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        serializer = VideoIdSerializer(video)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

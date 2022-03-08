@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Video, Keyword, Frequency
+from .models import Frequency, Keyword, Video
 
 # Register your models here.
 

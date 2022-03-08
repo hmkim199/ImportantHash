@@ -17,9 +17,17 @@ pytube = "^12.0.0"
 pandas = "^1.4.1"
 drf-yasg = "^1.20.0"
 django-cors-headers = "^3.11.0"
+isort = "^5.10.1"
 
 [tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+black = "^22.1.0"
+isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']

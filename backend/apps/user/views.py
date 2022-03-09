@@ -27,7 +27,7 @@ class RegisterView(APIView):
         request_body=RegistrationSerializer,
         tags=["user"],
         operation_description="회원가입",
-        responses={201: "회원가입 성공", 401: "없는 회원이거나 비밀번호 틀림"},  # can use schema or text
+        responses={201: "회원가입 성공", 500: "없는 회원이거나 비밀번호 틀림"},
     )
     def post(self, request, *args, **kwargs):
         """
@@ -38,18 +38,14 @@ class RegisterView(APIView):
 
             data = {}
 
-            if serializer.is_valid():
-                user = serializer.save()
+            serializer.is_valid()
+            user = serializer.save()
 
-                data["response"] = "Registration Successful!"
-                data["user_ID"] = user.user_ID
-                data["email"] = user.email
+            data["response"] = "Registration Successful!"
+            data["user_ID"] = user.user_ID
+            data["email"] = user.email
 
-                return Response(data, status=status.HTTP_201_CREATED)
-
-            else:
-                data = serializer.errors
-                return Response(data, status=status.HTTP_409_CONFLICT)
+            return Response(data, status=status.HTTP_201_CREATED)
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -60,18 +56,13 @@ class MyTokenObtainPairView(TokenObtainPairView):
         request_body=MyTokenObtainPairSerializer,
         tags=["user"],
         operation_description="로그인 시 토큰 발급",
-        responses={200: "로그인 성공", 409: "없는 회원이거나 비밀번호 틀림"},  # can use schema or text
+        responses={200: "로그인 성공", 401: "없는 회원이거나 비밀번호 틀림"},
     )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
-        try:
-            serializer.is_valid(raise_exception=True)
-            return Response(data=serializer.validated_data, status=status.HTTP_200_OK)
-
-        except Exception:
-            return Response("not user or wrong password!", status.HTTP_409_CONFLICT)
-
+        serializer.is_valid(raise_exception=True)
+        return Response(data=serializer.validated_data, status=status.HTTP_200_OK)
 
 class MyTokenVerifyView(TokenVerifyView):
     serializer_class = TokenVerifySerializer
@@ -81,18 +72,13 @@ class MyTokenVerifyView(TokenVerifyView):
         request_body=TokenVerifySerializer,
         tags=["user"],
         operation_description="토큰 유효 확인",
-        responses={200: "토큰 유효", 401: "토큰 무효"},  # can use schema or text
+        responses={200: "토큰 유효", 500: "토큰 무효"},
     )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-
-        try:
-            serializer.is_valid(raise_exception=True)
-            return Response(data=serializer.validated_data, status=status.HTTP_200_OK)
-
-        except Exception:
-            return Response("Token is invalid or expired", status.HTTP_401_UNAUTHORIZED)
-
+        
+        serializer.is_valid(raise_exception=True)
+        return Response(data=serializer.validated_data, status=status.HTTP_200_OK)
 
 class MyTokenRefreshView(TokenRefreshView):
     serializer_class = TokenRefreshSerializer
@@ -102,9 +88,13 @@ class MyTokenRefreshView(TokenRefreshView):
         request_body=TokenRefreshSerializer,
         tags=["user"],
         operation_description="토큰 재발행",
-        responses={200: "토큰 재발행 성공", 401: "없는 토큰"},  # can use schema or text
+        responses={200: "토큰 재발행 성공", 500: "없는 토큰"},
     )
+
     def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -116,17 +106,13 @@ class MyTokenBlacklistView(TokenBlacklistView):
         request_body=TokenBlacklistSerializer,
         tags=["user"],
         operation_description="토큰 블랙리스트",
-        responses={  # can use schema or text
+        responses={
             200: "로그아웃 성공",
             401: "이미 로그아웃 됨(토큰 블랙리스트)",
         },
     )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-
-        try:
-            serializer.is_valid(raise_exception=True)
-            return Response(data=serializer.validated_data, status=status.HTTP_200_OK)
-
-        except Exception:
-            return Response("Token is invalid or expired", status.HTTP_401_UNAUTHORIZED)
+        
+        serializer.is_valid(raise_exception=True)
+        return Response(data=serializer.validated_data, status=status.HTTP_200_OK)

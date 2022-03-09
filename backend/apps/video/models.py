@@ -1,7 +1,8 @@
-from django.db import models
-from backend.apps.user.models import User
-from binascii import hexlify
 import os
+from binascii import hexlify
+
+from backend.apps.user.models import User
+from django.db import models
 
 
 def _createHash():
@@ -20,10 +21,7 @@ class Video(models.Model):
     """
 
     id = models.CharField(
-        primary_key=True,
-        max_length=10,
-        default=_createHash,
-        unique=True
+        primary_key=True, max_length=10, default=_createHash, unique=True
     )
 
     user_id = models.ForeignKey(

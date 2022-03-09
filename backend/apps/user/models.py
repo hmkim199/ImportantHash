@@ -1,8 +1,6 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
-)
 
 
 class UserManager(BaseUserManager):
@@ -12,7 +10,7 @@ class UserManager(BaseUserManager):
         birth and password.
         """
         if not email:
-            raise ValueError('Users must have an email address')
+            raise ValueError("Users must have an email address")
 
         user = self.model(
             user_ID=user_ID,
@@ -29,7 +27,7 @@ class UserManager(BaseUserManager):
         birth and password.
         """
         user = self.create_user(
-            user_ID=user_ID, 
+            user_ID=user_ID,
             email=email,
             password=password,
         )
@@ -39,9 +37,9 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    user_ID = models.CharField(verbose_name='유저아이디', max_length=150, unique=True)
+    user_ID = models.CharField(verbose_name="유저아이디", max_length=150, unique=True)
     email = models.EmailField(
-        verbose_name='이메일',
+        verbose_name="이메일",
         max_length=255,
         unique=True,
     )
@@ -52,12 +50,12 @@ class User(AbstractBaseUser):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'user_ID'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = "user_ID"
+    REQUIRED_FIELDS = ["email"]
 
     class Meta:
         verbose_name_plural = "사용자"
-        db_table = 'user'
+        db_table = "user"
 
     def __str__(self):
         return self.user_ID

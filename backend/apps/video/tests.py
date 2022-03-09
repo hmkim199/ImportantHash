@@ -1,3 +1,4 @@
-from django.test import TestCase
-
-# Create your tests here.
+from backend.apps.video.models import Frequency, Keyword, Video
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase

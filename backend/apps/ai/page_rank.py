@@ -3,9 +3,10 @@ import traceback
 import typing as ty
 
 import pytube
-from hanspell import spell_checker
 from krwordrank.word import summarize_with_keywords
 from youtube_transcript_api import YouTubeTranscriptApi
+
+from hanspell import spell_checker
 
 sample_url = "https://www.youtube.com/watch?v=mc02IZhouEg"
 sample_url2 = "https://youtu.be/mc02IZhouEg"

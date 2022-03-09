@@ -18,6 +18,7 @@ pandas = "^1.4.1"
 drf-yasg = "^1.20.0"
 django-cors-headers = "^3.11.0"
 isort = "^5.10.1"
+konlpy = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

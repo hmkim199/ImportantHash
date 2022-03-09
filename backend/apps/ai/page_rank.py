@@ -1,9 +1,9 @@
-import os
 import re
 import traceback
 import typing as ty
 
 import pytube
+from hanspell import spell_checker
 from krwordrank.word import summarize_with_keywords
 from youtube_transcript_api import YouTubeTranscriptApi
 
@@ -17,7 +17,7 @@ class YoutubeInference:
     youtube_url_prefix = "https://www.youtube.com/watch?v="
 
     with open(stop_words_path, "r", encoding="utf-8") as fp:
-        stop_words = fp.readline().split(" ")
+        stop_words = fp.readline().strip().split()
 
     # hyper parmas
     beta = 0.85  # PageRank의 decaying factor beta
@@ -94,7 +94,6 @@ class YoutubeInference:
             stopwords=self.stop_words,
             verbose=self.verbose,
         )
-        keywords = summarize_with_keywords(scripts)  # with default arguments
 
         words = []
         word_importance = {}
@@ -159,17 +158,20 @@ class YoutubeInference:
     def preprocessing(self, script):
         new_script = re.sub("\n", "", script)
         new_script = re.sub("[a-zA-Z]", "", new_script)
-        # new_script = re.sub('\d+','', new_script) - 애매해서 전처리 추가 작업 끝나기 전까지 보류
+        new_script = re.sub("\d+", "", new_script)
         new_script = re.sub("[ㄱ-ㅎㅏ-ㅣ]+", "", new_script)
         new_script = re.sub(
             "[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`'…》]", "", new_script
         )
+        new_script = spell_checker.check(new_script).checked
+
         return new_script
 
 
-# yi = YoutubeInference()
+# yi = YoutubeInference("O4xuYk20J40")
 # scripts_info, keywords_info, words_freq = yi.inference()
 # import pprint
+
 # pprint.pprint(scripts_info)
 # pprint.pprint(keywords_info)
 # pprint.pprint(words_freq)

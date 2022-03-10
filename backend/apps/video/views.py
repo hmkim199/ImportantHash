@@ -156,6 +156,7 @@ class VideoAPIView(APIView):
     @swagger_auto_schema(
         operation_summary="영상 분석 요청",
         responses={
+            200: VideoIdSerializer(),
             201: VideoIdSerializer(),
             400: "ERROR: Unsupported video.",
             500: "SERVER ERROR",
@@ -177,6 +178,13 @@ class VideoAPIView(APIView):
         validated_data = serializer.validated_data
         source = validated_data.get("source")
         youtube_slug = validated_data.get("youtube_slug")
+
+        # 이미 로그인 한 유저가 저장했던 영상인 경우 해당 비디오 id 리턴
+        if request.user.is_authenticated:
+            video = Video.objects.filter(user_id=request.user, source=source).first()
+            if video:
+                serializer = VideoIdSerializer(video)
+                return Response(serializer.data)
 
         # url로 중요도 분석
         try:

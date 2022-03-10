@@ -4,6 +4,7 @@ from backend.apps.ai.page_rank import YoutubeInference
 from backend.apps.script.models import Script
 from backend.apps.video.models import Frequency, Keyword, Video
 from backend.apps.video.serializers import VideoIdSerializer, VideoSerializer
+from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -56,21 +57,21 @@ class VideoDetailAPIView(APIView):
         """
         video_id에 해당하는 특정 비디오를 불러오는 API
         """
-        try:
-            video = Video.objects.filter(id=video_id).first()
-            serializer = VideoSerializer(video)
-            return Response(serializer.data)
-
-        except Video.DoesNotExist:
+        video = Video.objects.filter(id=video_id).first()
+        if not video:
             return Response(
                 {"error": "Video Not found"}, status=status.HTTP_404_NOT_FOUND
             )
+        else:
+            serializer = VideoSerializer(video)
+            return Response(serializer.data)
 
     @swagger_auto_schema(
         operation_summary="영상 마이 페이지에 저장 요청",
         operation_description="video_id에 해당하는 특정 비디오를 유저 페이지에 저장하는 API",
         responses={
             200: "성공적으로 저장되었습니다.",
+            401: "자격 인증 데이터가 제공되지 않았습니다.",
             404: "해당 id에 해당하는 video가 없습니다.",
             500: "SERVER ERROR",
         },
@@ -79,16 +80,16 @@ class VideoDetailAPIView(APIView):
         """
         video_id에 해당하는 특정 비디오를 유저 페이지에 저장하는 API
         """
-        try:
-            video = Video.objects.filter(id=video_id).first()
-            video.user_id = self.request.user
-            video.save()
-            return Response({"detail": "성공적으로 저장되었습니다."})
 
-        except Exception:
+        video = Video.objects.filter(id=video_id).first()
+        if not video:
             return Response(
                 {"error": "해당 id에 해당하는 video가 없습니다."}, status=status.HTTP_404_NOT_FOUND
             )
+        else:
+            video.user_id = self.request.user
+            video.save()
+            return Response({"detail": "성공적으로 저장되었습니다."})
 
     @swagger_auto_schema(
         operation_summary="영상 마이 페이지에서 삭제 요청",
@@ -103,16 +104,15 @@ class VideoDetailAPIView(APIView):
         """
         video_id에 해당하는 특정 비디오를 유저 페이지에서 삭제하는 API
         """
-        try:
-            video = Video.objects.filter(id=video_id).first()
-            video.user_id = None
-            video.save()
-            return Response({"detail": "성공적으로 삭제되었습니다."})
-
-        except Exception:
+        video = Video.objects.filter(id=video_id).first()
+        if not video:
             return Response(
                 {"error": "해당 id에 해당하는 video가 없습니다."}, status=status.HTTP_404_NOT_FOUND
             )
+        else:
+            video.user_id = None
+            video.save()
+            return Response({"detail": "성공적으로 삭제되었습니다."})
 
 
 class VideoAPIView(APIView):
@@ -145,10 +145,18 @@ class VideoAPIView(APIView):
             frequency.count = words_freq[word]
             frequency.save()
 
+    def store_video_info(self, source, youtube_slug, youtube_inference):
+        video = Video(source=source, youtube_slug=youtube_slug)
+        video.author = youtube_inference.author
+        video.title = youtube_inference.title
+        video.thumbnail = youtube_inference.thumbnail_url
+        video.save()
+        return video
+
     @swagger_auto_schema(
         operation_summary="영상 분석 요청",
         responses={
-            200: VideoIdSerializer(),
+            201: VideoIdSerializer(),
             400: "ERROR: Unsupported video.",
             500: "SERVER ERROR",
         },
@@ -171,17 +179,17 @@ class VideoAPIView(APIView):
         youtube_slug = validated_data.get("youtube_slug")
 
         # url로 중요도 분석
-        youtube_inference = YoutubeInference(source)
-
-        video = Video(source=source, youtube_slug=youtube_slug)
-        video.author = youtube_inference.author
-        video.title = youtube_inference.title
-        video.thumbnail = youtube_inference.thumbnail_url
-        video.save()
-
+        try:
+            youtube_inference = YoutubeInference(source)
+        except Exception:
+            return Response(
+                {"error": "Unsupported video."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         # scripts, keywords, frequency 저장
         inference_result: ty.List[dict] = youtube_inference.inference()
-        if len(inference_result) != 3:
+
+        if not inference_result or len(inference_result) != 3:
             return Response(
                 {"error": "Unsupported video."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -189,9 +197,11 @@ class VideoAPIView(APIView):
 
         scripts_info, keywords_info, words_freq = inference_result
 
-        self.store_keywords_info(keywords_info, video)
-        self.store_scripts_info(scripts_info, video)
-        self.store_frequency(words_freq, video)
+        with transaction.atomic():
+            video = self.store_video_info(source, youtube_slug, youtube_inference)
+            self.store_keywords_info(keywords_info, video)
+            self.store_scripts_info(scripts_info, video)
+            self.store_frequency(words_freq, video)
 
         serializer = VideoIdSerializer(video)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

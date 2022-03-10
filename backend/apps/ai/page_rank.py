@@ -28,7 +28,11 @@ class YoutubeInference:
 
     def __init__(self, slug: str = sample_url2[17:]):
         self._url = self.youtube_url_prefix + slug
-        yt = pytube.YouTube(self._url)
+        try:
+            yt = pytube.YouTube(self._url)
+        except Exception:
+            traceback.print_exc()
+            return Exception
         self._title = yt.title
         self._thumbnail = yt.thumbnail_url
         self._author = yt.author

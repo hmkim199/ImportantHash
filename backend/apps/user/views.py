@@ -3,17 +3,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from rest_framework_simplejwt.serializers import (
-    TokenBlacklistSerializer,
-    TokenRefreshSerializer,
-    TokenVerifySerializer,
-)
-from rest_framework_simplejwt.views import (
-    TokenBlacklistView,
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
+from rest_framework_simplejwt.serializers import (TokenBlacklistSerializer,
+                                                  TokenRefreshSerializer,
+                                                  TokenVerifySerializer)
+from rest_framework_simplejwt.views import (TokenBlacklistView,
+                                            TokenObtainPairView,
+                                            TokenRefreshView, TokenVerifyView)
 
 from .models import User
 from .serializers import MyTokenObtainPairSerializer, RegistrationSerializer

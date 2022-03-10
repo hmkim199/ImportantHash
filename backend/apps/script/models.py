@@ -1,5 +1,6 @@
-from backend.apps.video.models import Video
 from django.db import models
+
+from backend.apps.video.models import Video
 
 
 # Create your models here.

@@ -1,4 +1,5 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import (
     TokenBlacklistSerializer,
     TokenObtainPairSerializer,
@@ -16,7 +17,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def save(self):
-
         password = self.validated_data["password"]
 
         if User.objects.filter(email=self.validated_data["email"]).exists():

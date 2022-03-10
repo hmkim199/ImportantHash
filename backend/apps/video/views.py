@@ -70,7 +70,7 @@ class VideoDetailAPIView(APIView):
         operation_summary="영상 마이 페이지에 저장 요청",
         operation_description="video_id에 해당하는 특정 비디오를 유저 페이지에 저장하는 API",
         responses={
-            200: "성공적으로 저장되었습니다.",
+            200: "성공적으로 저장된 경우 또는 이미 저장된 경우.",
             401: "자격 인증 데이터가 제공되지 않았습니다.",
             404: "해당 id에 해당하는 video가 없습니다.",
             500: "SERVER ERROR",
@@ -80,6 +80,8 @@ class VideoDetailAPIView(APIView):
         """
         video_id에 해당하는 특정 비디오를 유저 페이지에 저장하는 API
         """
+        if Video.objects.filter(user_id=request.user, id=video_id).first():
+            return Response({"detail": "이미 저장된 영상입니다."})
 
         video = Video.objects.filter(id=video_id).first()
         if not video:

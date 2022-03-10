@@ -174,7 +174,9 @@ class VideoAPIView(APIView):
             "youtube_slug"
         )
         serializer = VideoSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         validated_data = serializer.validated_data
         source = validated_data.get("source")
         youtube_slug = validated_data.get("youtube_slug")

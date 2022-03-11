@@ -37,10 +37,14 @@ schema_view_v1 = get_schema_view(
     patterns=schema_url_patterns,
 )
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
+app_urls = [
     path("user/", include("backend.apps.user.urls")),
     path("videos/", include("backend.apps.video.urls")),
+]
+
+urlpatterns = [
+    path("api/", include(app_urls)),
+    path("admin/", admin.site.urls),
     url(
         r"^swagger(?P<format>\.json|\.yaml)$",
         schema_view_v1.without_ui(cache_timeout=0),

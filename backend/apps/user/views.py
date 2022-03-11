@@ -24,7 +24,7 @@ class RegisterView(APIView):
         request_body=RegistrationSerializer,
         tags=["user"],
         operation_description="회원가입",
-        responses={201: "회원가입 성공", 500: "없는 회원이거나 비밀번호 틀림"},
+        responses={201: "회원가입 성공", 400:"요청형식에 맞지않는 데이터"},
     )
     def post(self, request):
         """
@@ -55,16 +55,19 @@ class RegisterView(APIView):
 
         else:
             serializer = RegistrationSerializer(data=request.data)
-            serializer.is_valid()
-            user = serializer.save()
+            if serializer.is_valid():
+                user = serializer.save()
 
-            data = {}
+                data = {}
 
-            data["response"] = "Registration Successful!"
-            data["user_ID"] = user.user_ID
-            data["email"] = user.email
+                data["response"] = "Registration Successful!"
+                data["user_ID"] = user.user_ID
+                data["email"] = user.email
 
-            return Response(data, status=status.HTTP_201_CREATED)
+                return Response(data, status=status.HTTP_201_CREATED)
+            
+            else:
+                Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MyTokenObtainPairView(TokenObtainPairView):

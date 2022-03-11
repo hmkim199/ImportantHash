@@ -13,4 +13,5 @@ ignore =
 exclude =
         .git,
         __pycache__
+        .lock
 count = True

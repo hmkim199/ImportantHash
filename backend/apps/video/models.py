@@ -1,8 +1,9 @@
 import os
 from binascii import hexlify
 
-from backend.apps.user.models import User
 from django.db import models
+
+from backend.apps.user.models import User
 
 
 def _createHash():

@@ -1,10 +1,8 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import (
-    TokenBlacklistSerializer,
-    TokenObtainPairSerializer,
-    TokenRefreshSerializer,
-    TokenVerifySerializer,
-)
+from rest_framework_simplejwt.serializers import (TokenBlacklistSerializer,
+                                                  TokenObtainPairSerializer,
+                                                  TokenRefreshSerializer,
+                                                  TokenVerifySerializer)
 
 from .models import User
 

@@ -2,17 +2,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.serializers import (
-    TokenBlacklistSerializer,
-    TokenRefreshSerializer,
-    TokenVerifySerializer,
-)
-from rest_framework_simplejwt.views import (
-    TokenBlacklistView,
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
+from rest_framework_simplejwt.serializers import (TokenBlacklistSerializer,
+                                                  TokenRefreshSerializer,
+                                                  TokenVerifySerializer)
+from rest_framework_simplejwt.views import (TokenBlacklistView,
+                                            TokenObtainPairView,
+                                            TokenRefreshView, TokenVerifyView)
 
 from .serializers import MyTokenObtainPairSerializer, RegistrationSerializer
 
@@ -64,6 +59,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
         serializer.is_valid(raise_exception=True)
         return Response(data=serializer.validated_data, status=status.HTTP_200_OK)
 
+
 class MyTokenVerifyView(TokenVerifyView):
     serializer_class = TokenVerifySerializer
 
@@ -76,9 +72,10 @@ class MyTokenVerifyView(TokenVerifyView):
     )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        
+
         serializer.is_valid(raise_exception=True)
         return Response(data=serializer.validated_data, status=status.HTTP_200_OK)
+
 
 class MyTokenRefreshView(TokenRefreshView):
     serializer_class = TokenRefreshSerializer
@@ -90,7 +87,6 @@ class MyTokenRefreshView(TokenRefreshView):
         operation_description="토큰 재발행",
         responses={200: "토큰 재발행 성공", 500: "없는 토큰"},
     )
-
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
@@ -113,6 +109,6 @@ class MyTokenBlacklistView(TokenBlacklistView):
     )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        
+
         serializer.is_valid(raise_exception=True)
         return Response(data=serializer.validated_data, status=status.HTTP_200_OK)

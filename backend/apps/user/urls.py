@@ -1,12 +1,7 @@
 from django.urls import path
 
-from .views import (
-    MyTokenBlacklistView,
-    MyTokenObtainPairView,
-    MyTokenRefreshView,
-    MyTokenVerifyView,
-    RegisterView,
-)
+from .views import (MyTokenBlacklistView, MyTokenObtainPairView,
+                    MyTokenRefreshView, MyTokenVerifyView, RegisterView)
 
 urlpatterns = [
     # path('login/', obtain_auth_token, name='login'),

@@ -1,15 +1,17 @@
 import typing as ty
 
+from django.db import transaction
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import serializers, status
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from backend.apps.ai.page_rank import YoutubeInference
 from backend.apps.script.models import Script
 from backend.apps.video.models import Frequency, Keyword, Video
 from backend.apps.video.serializers import VideoIdSerializer, VideoSerializer
-from django.db import transaction
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import serializers, status
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 
 class VideoListAPIView(APIView):

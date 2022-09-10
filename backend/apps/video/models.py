@@ -1,9 +1,8 @@
 import os
 from binascii import hexlify
 
-from django.db import models
-
 from backend.apps.user.models import User
+from django.db import models
 
 
 def _createHash():
@@ -25,18 +24,19 @@ class Video(models.Model):
         primary_key=True, max_length=10, default=_createHash, unique=True
     )
 
-    user_id = models.ForeignKey(
-        User,
-        verbose_name="사용자",
-        on_delete=models.CASCADE,
-        related_name="video_user",
-        null=True,
-        blank=True,
-        default="",
-    )
+    # user_id = models.ForeignKey(
+    #     User,
+    #     verbose_name="사용자",
+    #     on_delete=models.CASCADE,
+    #     related_name="video_user",
+    #     null=True,
+    #     blank=True,
+    #     default="",
+    # )
 
     source = models.URLField(
         verbose_name="동영상 URL",
+        unique=True,
     )
 
     youtube_slug = models.CharField(
@@ -44,6 +44,7 @@ class Video(models.Model):
         max_length=255,
         blank=True,
         default="",
+        unique=True,
     )
 
     title = models.CharField(
@@ -141,3 +142,26 @@ class Frequency(models.Model):
 
     def __str__(self):
         return self.keyword
+
+
+class UserVideo(models.Model):
+    """
+    Video 모델
+    """
+
+    video = models.ForeignKey(
+        Video,
+        verbose_name="동영상 id",
+        on_delete=models.CASCADE,
+        related_name="user_video",
+    )
+
+    user_id = models.ForeignKey(
+        User,
+        verbose_name="사용자",
+        on_delete=models.CASCADE,
+        related_name="video_user",
+        null=True,
+        blank=True,
+        default="",
+    )

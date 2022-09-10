@@ -1,7 +1,6 @@
+from backend.apps.script.serializers import ScriptSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-
-from backend.apps.script.serializers import ScriptSerializer
 
 from .models import Frequency, Keyword, Video
 
@@ -40,7 +39,7 @@ class VideoSerializer(ModelSerializer):
         model = Video
         fields = (
             "id",
-            "user_id",
+            # "user_id",
             "source",
             "youtube_slug",
             "title",

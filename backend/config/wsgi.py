@@ -19,6 +19,6 @@ env_path = os.path.join(BASE_DIR, ".env")
 if os.path.exists(env_path):
     dotenv.read_dotenv(env_path)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.config.settings.prod")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.config.settings.local")
 
 application = get_wsgi_application()

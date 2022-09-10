@@ -2,7 +2,7 @@ import typing as ty
 
 from backend.apps.ai.page_rank import YoutubeInference
 from backend.apps.script.models import Script
-from backend.apps.video.models import Frequency, Keyword, Video
+from backend.apps.video.models import Frequency, Keyword, UserVideo, Video
 from backend.apps.video.serializers import VideoIdSerializer, VideoSerializer
 from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
@@ -89,8 +89,10 @@ class VideoDetailAPIView(APIView):
                 {"error": "해당 id에 해당하는 video가 없습니다."}, status=status.HTTP_404_NOT_FOUND
             )
         else:
-            video.user_id = self.request.user
-            video.save()
+            user_video = UserVideo(video=video, user_id=request.user)
+            user_video.save()
+            # video.user_id = self.request.user
+            # video.save()
             return Response({"detail": "성공적으로 저장되었습니다."})
 
     @swagger_auto_schema(
@@ -112,8 +114,12 @@ class VideoDetailAPIView(APIView):
                 {"error": "해당 id에 해당하는 video가 없습니다."}, status=status.HTTP_404_NOT_FOUND
             )
         else:
-            video.user_id = None
-            video.save()
+            user_video = UserVideo.objects.filter(
+                video=video, user_id=request.user
+            ).first()
+            user_video.delete()
+            # video.user_id = None
+            # video.save()
             return Response({"detail": "성공적으로 삭제되었습니다."})
 
 
@@ -175,20 +181,29 @@ class VideoAPIView(APIView):
         request.data["source"] = self.youtube_url_prefix + request.data.get(
             "youtube_slug"
         )
+
+        source = request.data.get("source")
+        youtube_slug = request.data.get("youtube_slug")
+
+        video = Video.objects.filter(source=source, youtube_slug=youtube_slug).first()
+        if video:
+            serializer = VideoIdSerializer(video)
+            return Response(serializer.data)
+
+        print("====1====")
         serializer = VideoSerializer(data=request.data)
         if not serializer.is_valid():
+            print("====2====")
+
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # validated_data = serializer.validated_data
 
-        validated_data = serializer.validated_data
-        source = validated_data.get("source")
-        youtube_slug = validated_data.get("youtube_slug")
-
-        # 이미 로그인 한 유저가 저장했던 영상인 경우 해당 비디오 id 리턴
-        if request.user.is_authenticated:
-            video = Video.objects.filter(user_id=request.user, source=source).first()
-            if video:
-                serializer = VideoIdSerializer(video)
-                return Response(serializer.data)
+        # # 이미 로그인 한 유저가 저장했던 영상인 경우 해당 비디오 id 리턴
+        # if request.user.is_authenticated:
+        #     video = Video.objects.filter(user_id=request.user, source=source).first()
+        #     if video:
+        #         serializer = VideoIdSerializer(video)
+        #         return Response(serializer.data)
 
         # url로 중요도 분석
         try:

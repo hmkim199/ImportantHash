@@ -3,10 +3,9 @@ import traceback
 import typing as ty
 
 import pytube
+from backend.apps.ai.hanspell import spell_checker
 from krwordrank.word import summarize_with_keywords
 from youtube_transcript_api import YouTubeTranscriptApi
-
-from backend.apps.ai.hanspell import spell_checker
 
 sample_url = "https://www.youtube.com/watch?v=mc02IZhouEg"
 sample_url2 = "https://youtu.be/mc02IZhouEg"
@@ -100,29 +99,42 @@ class YoutubeInference:
             verbose=self.verbose,
         )
 
-        words = []
+        # words = []
+        # freq_words = []
+        # important = []
         word_importance = {}
-        for word, importance in sorted(
-            keywords.items(), key=lambda x: x[1], reverse=True
-        ):
-            # print('%8s:\t%.4f' % (word, r))
-            words.append(word)
+        # for word, importance in sorted(
+        #     keywords.items(), key=lambda x: x[1], reverse=True
+        # ):
+        #     # print('%8s:\t%.4f' % (word, r))
+        #     words.append(word)
 
         for word, importance in sorted(
             keywords.items(), key=lambda x: x[1], reverse=True
         )[:20]:
             # print('%8s:\t%.4f' % (word, r))
-            # freq_words.append(word)
+            # freq_words.append(word)  # newly added
+            # important.append(importance)
             word_importance[word] = importance
         return word_importance
 
     def get_script_importance(self, scripts_info, word_importance):
         keywords_info = {}
+        # words_temp = []
+        # count_temp = []
         words_freq = {}
         idx = 0
         for timestamp in scripts_info:
             cnt = 0
             for word in list(word_importance.keys()):
+                # if word not in words_temp:  # newly added
+                #     words_temp.append(word)  # newly added
+
+                # if scripts_info[timestamp]["script"].count(word) not in count_temp:
+                #     count_temp.append(
+                #         scripts_info[timestamp]["script"].count(word)
+                #     )  # newly added
+
                 if words_freq.get(word) is None:
                     words_freq[word] = scripts_info[timestamp]["script"].count(word)
                 else:

@@ -7,13 +7,18 @@ from backend.apps.ai.hanspell import spell_checker
 from krwordrank.word import summarize_with_keywords
 from youtube_transcript_api import YouTubeTranscriptApi
 
+# from hanspell import spell_checker
+
 sample_url = "https://www.youtube.com/watch?v=mc02IZhouEg"
 sample_url2 = "https://youtu.be/mc02IZhouEg"
+sample_slug = "mc02IZhouEg"
 
 
 class YoutubeInference:
     youtube_id_compiler = re.compile("(v=)([a-zA-Z0-9-_]{11})")
     stop_words_path = "backend/apps/ai/stopwords.txt"
+    # stop_words_path = "stopwords.txt"
+
     youtube_url_prefix = "https://www.youtube.com/watch?v="
 
     with open(stop_words_path, "r", encoding="utf-8") as fp:
@@ -26,7 +31,7 @@ class YoutubeInference:
     max_length = 10  # 단어의 최대 길이
     verbose = True
 
-    def __init__(self, slug: str = sample_url2[17:]):
+    def __init__(self, slug: str = sample_slug):
         self._url = self.youtube_url_prefix + slug
         try:
             yt = pytube.YouTube(self._url)
@@ -55,17 +60,12 @@ class YoutubeInference:
 
     def inference(self) -> ty.List[dict]:
         try:
-            scripts_info = self.get_transcript()  # {00:01: {"script":"가나다라마바사"}} 형식
-
-            sorted_scripts_N_time = sorted(scripts_info.items())
-            scripts = [
-                value["script"] for key, value in sorted_scripts_N_time
-            ]  # 시간 순으로 정렬된 스크립트
-            # timestamps = [key for key, value in sorted_scripts_N_time]
+            (
+                scripts_info,
+                scripts,
+            ) = self.get_transcript()  # {00:01: {"script":"가나다라마바사"}} 형식
 
             word_importance = self.get_script_keywords(scripts)  # 무슨 단어가 몇 점인지
-
-            # keywords = list(word_importance.keys())
 
             scripts_info, keywords_info, words_freq = self.get_script_importance(
                 scripts_info, word_importance
@@ -81,12 +81,20 @@ class YoutubeInference:
             youtube_id, languages={lang}
         )
 
-        rets = {}
+        res = []
+        s = []
         for script in scripts:
             time_str = self.time_int_to_str(script["start"])
             processed_script = self.preprocessing(script["text"])
-            rets[time_str] = {"script": processed_script, "importance": 0}
-        return rets
+            s.append(processed_script)
+            rets = {}
+            rets[time_str] = {
+                "script": processed_script,
+                "importance": 0,
+            }
+            res.append(rets)
+
+        return res, s
 
     def get_script_keywords(self, scripts):
         keywords = summarize_with_keywords(
@@ -99,57 +107,40 @@ class YoutubeInference:
             verbose=self.verbose,
         )
 
-        # words = []
-        # freq_words = []
-        # important = []
         word_importance = {}
-        # for word, importance in sorted(
-        #     keywords.items(), key=lambda x: x[1], reverse=True
-        # ):
-        #     # print('%8s:\t%.4f' % (word, r))
-        #     words.append(word)
 
         for word, importance in sorted(
             keywords.items(), key=lambda x: x[1], reverse=True
         )[:20]:
-            # print('%8s:\t%.4f' % (word, r))
-            # freq_words.append(word)  # newly added
-            # important.append(importance)
             word_importance[word] = importance
         return word_importance
 
     def get_script_importance(self, scripts_info, word_importance):
-        keywords_info = {}
-        # words_temp = []
-        # count_temp = []
+        keywords_info = []
         words_freq = {}
-        idx = 0
-        for timestamp in scripts_info:
-            cnt = 0
-            for word in list(word_importance.keys()):
-                # if word not in words_temp:  # newly added
-                #     words_temp.append(word)  # newly added
 
-                # if scripts_info[timestamp]["script"].count(word) not in count_temp:
-                #     count_temp.append(
-                #         scripts_info[timestamp]["script"].count(word)
-                #     )  # newly added
+        for i in range(len(scripts_info)):
+            info = scripts_info[i]
 
+            timestamp = list(info.keys())[0]
+            text = info[timestamp]["script"].split()
+            intersection = set(word_importance.keys()).intersection(set(text))
+            word_count = len(intersection)
+            for word in intersection:
                 if words_freq.get(word) is None:
-                    words_freq[word] = scripts_info[timestamp]["script"].count(word)
+                    words_freq[word] = 1
                 else:
-                    words_freq[word] += scripts_info[timestamp]["script"].count(word)
-                if word in scripts_info[timestamp]["script"]:
-                    cnt += 1
+                    words_freq[word] += 1
 
-                    keywords_info[idx] = {
+                keywords_info.append(
+                    {
                         "keyword": word,
                         "timestamp": timestamp,
                         "score": word_importance[word],
                     }
-                    idx += 1
+                )
 
-            scripts_info[timestamp]["importance"] = cnt
+            scripts_info[i][timestamp]["importance"] += word_count
 
         return scripts_info, keywords_info, words_freq
 
@@ -185,8 +176,8 @@ class YoutubeInference:
         return new_script
 
 
-# yi = YoutubeInference("O4xuYk20J40")
-# scripts_info, keywords_info, words_freq = yi.inference()
+yi = YoutubeInference("O4xuYk20J40")
+scripts_info, keywords_info, words_freq = yi.inference()
 # import pprint
 
 # pprint.pprint(scripts_info)

@@ -6,5 +6,5 @@ class WebsiteTestUser(HttpUser):
 
     @task
     def my_task(self):
-        body = {"youtube_slug": "aL0XXc1yGPs"}  # AnL39b9vFRw
+        body = {"youtube_slug": "CiT9xSUn3wc"}  # AnL39b9vFRw
         self.client.post("/api/videos/", json=body)

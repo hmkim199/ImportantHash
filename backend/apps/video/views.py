@@ -131,19 +131,21 @@ class VideoAPIView(APIView):
     youtube_url_prefix = "https://www.youtube.com/watch?v="
 
     def store_keywords_info(self, keywords_info, video):
-        for idx in keywords_info:
+        for info in keywords_info:
             keyword = Keyword(video=video)
-            keyword.timestamp = keywords_info[idx]["timestamp"]
-            keyword.keyword = keywords_info[idx]["keyword"]
-            keyword.score = keywords_info[idx]["score"]
+            keyword.timestamp = info["timestamp"]
+            keyword.keyword = info["keyword"]
+            keyword.score = info["score"]
             keyword.save()
 
     def store_scripts_info(self, scripts_info, video):
-        for timestamp in scripts_info:
+        for i in range(len(scripts_info)):
+            info = scripts_info[i]
+            timestamp = list(info.keys())[0]
             script = Script(video=video)
             script.timestamp = timestamp
-            script.content = scripts_info[timestamp]["script"]
-            script.importance_score = scripts_info[timestamp]["importance"]
+            script.content = scripts_info[i][timestamp]["script"]
+            script.importance_score = scripts_info[i][timestamp]["importance"]
             script.save()
 
     def store_frequency(self, words_freq, video):
@@ -190,20 +192,9 @@ class VideoAPIView(APIView):
             serializer = VideoIdSerializer(video)
             return Response(serializer.data)
 
-        print("====1====")
         serializer = VideoSerializer(data=request.data)
         if not serializer.is_valid():
-            print("====2====")
-
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # validated_data = serializer.validated_data
-
-        # # 이미 로그인 한 유저가 저장했던 영상인 경우 해당 비디오 id 리턴
-        # if request.user.is_authenticated:
-        #     video = Video.objects.filter(user_id=request.user, source=source).first()
-        #     if video:
-        #         serializer = VideoIdSerializer(video)
-        #         return Response(serializer.data)
 
         # url로 중요도 분석
         try:
